@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%230ea5e9' d='M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zm-16 112c35.3 0 64 28.7 64 64 0 23.7-12.9 44.3-32 55.4v16.6c0 8.8-7.2 16-16 16s-16-7.2-16-16v-16.6c-19.1-11.1-32-31.7-32-55.4 0-35.3 28.7-64 64-64zm80 288H192c-8.8 0-16-7.2-16-16s7.2-16 16-16h128c8.8 0 16 7.2 16 16s-7.2 16-16 16z'/></svg>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز الشيماء - د. زيزي الشاذلي</title>
+    <!-- Bootstrap 5 & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #102a43;
+            --primary-light: #243b53;
+            --accent: #0ea5e9;
+            --accent-hover: #0284c7;
+            --secondary: #10b981;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Navbar Design */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary) !important;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            color: var(--accent);
+            background: rgba(14, 165, 233, 0.1);
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 1.4rem;
+        }
+
+        /* Hero Banner */
+        .hero-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0284c7 100%);
+            color: white;
+            padding: 90px 0 110px 0;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 500px;
+            height: 500px;
+            background: rgba(14, 165, 233, 0.15);
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .hero-title {
+            font-weight: 900;
+            font-size: 2.8rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 15px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.92;
+            font-weight: 500;
+            margin-bottom: 25px;
+        }
+
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        /* Main Container Cards */
+        .main-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            padding: 35px;
+            margin-top: -50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card-header-title {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .card-header-title i {
+            color: var(--accent);
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+        }
+
+        .btn-booking {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-booking:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+            color: white;
+        }
+
+        /* Info Card Sidebar */
+        .info-card {
+            background: #ffffff;
+            border-radius: var(--border-radius);
+            border: 1px solid #e2e8f0;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .info-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .services-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .service-tag {
+            background: #f1f5f9;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .service-tag:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Admin Dashboard Section */
+        .admin-section {
+            background: #ffffff;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--accent);
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            margin-top: 40px;
+        }
+
+        .table > :not(caption) > * > * {
+            padding: 14px 16px;
+        }
+
+        .table-light {
+            background-color: #f8fafc;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 40px 0 20px 0;
+            margin-top: 80px;
+        }
+
+        .footer a {
+            color: #cbd5e1;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fa-solid fa-brain"></i>
+                <span>مركز الشيماء</span>
+            </a>
+            <span class="badge bg-light text-dark border px-3 py-2 fw-bold d-none d-sm-inline">
+                <i class="fa-solid fa-user-doctor text-info me-1"></i> د. زيزي الشاذلي - أخصائي نفسي
+            </span>
+        </div>
+    </nav>
+
+    <!-- الواجهة الرئيسية -->
+    <header class="hero-section text-center">
+        <div class="container position-relative">
+            <div class="hero-badge">
+                <i class="fa-solid fa-star text-warning"></i> عيادة متخصصة في الاستشارات النفسية والتأهيل
+            </div>
+            <h1 class="hero-title">مركز الشيماء للخدمات النفسية والتأهيلية</h1>
+            <p class="hero-subtitle">تحت إشراف: د. زيزي الشاذلي (أخصائي نفسي)</p>
+            <p class="opacity-75 mb-4">
+                <i class="fa-solid fa-location-dot me-2 text-info"></i> خلف مدرسة عبد الهادي السقا - أعلى صيدلية د. ميرفت
+            </p>
+            <a href="#booking" class="btn btn-light btn-lg px-4 py-3 fw-bold text-dark rounded-3 shadow-lg">
+                <i class="fa-regular fa-calendar-check text-primary me-2"></i>احجز موعد في العيادة الان
+            </a>
+        </div>
+    </header>
+
+    <div class="container my-4">
+        <div class="row g-4">
+            
+            <!-- نموذج الحجز -->
+            <div class="col-lg-7" id="booking">
+                <div class="main-card">
+                    <div class="card-header-title">
+                        <i class="fa-solid fa-calendar-plus"></i>
+                        <span>حجز موعد بالعيادة</span>
+                    </div>
+                    <p class="text-muted small mb-4">اختر التخصص والموعد المتاح، وسنقوم بالاتصال بك للتأكيد. (الدفع نقداً بالعيادة)</p>
+                    
+                    <form id="bookingForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">اسم المريض / الحالة</label>
+                                <input type="text" class="form-control" id="patientName" placeholder="أدخل الاسم بالكامل" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">رقم الهاتف للتواصل</label>
+                                <input type="tel" class="form-control" id="patientPhone" placeholder="01xxxxxxxx" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">نوع الحالة / الخدمة المطلوبة</label>
+                                <select class="form-select" id="caseType" required>
+                                    <option value="" selected disabled>اختر التخصص المطلوب...</option>
+                                    <option value="تخاطب">تخاطب</option>
+                                    <option value="تعديل سلوك">تعديل سلوك</option>
+                                    <option value="تنمية مهارات">تنمية مهارات</option>
+                                    <option value="إرشاد أُسري">إرشاد أُسري</option>
+                                    <option value="فرط الحركة">فرط الحركة</option>
+                                    <option value="إعاقة عقلية">إعاقة عقلية</option>
+                                    <option value="تشتت انتباه">تشتت انتباه</option>
+                                    <option value="مقاييس لغة">مقاييس لغة</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">الموعد المناسب</label>
+                                <select class="form-select" id="bookingSlot" required>
+                                    <option value="" selected disabled>جاري تحميل المواعيد المتاحة...</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-booking w-100">
+                                    <i class="fa-solid fa-paper-plane me-2"></i>تأكيد طلب الحجز
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="bookingAlert" class="alert alert-success mt-4 d-none border-0 shadow-sm" role="alert">
+                         <i class="fa-solid fa-circle-check me-2"></i>تم تسجيل طلب الحجز بنجاح! سيتم التواصل معكم هاتفياً لتأكيد الموعد.
+                    </div>
+                </div>
+            </div>
+
+            <!-- معلومات العيادة والتواصل -->
+            <div class="col-lg-5">
+                <div class="info-card mb-4" style="margin-top: -50px; position: relative; z-index: 10;">
+                    <h4 class="fw-bold text-dark mb-4 pb-2 border-bottom">معلومات المركز والتواصل</h4>
+                    
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-user-doctor"></i></div>
+                        <div>
+                            <div class="fw-bold text-dark">الأخصائي المسئول</div>
+                            <div class="text-muted small">د. زيزي الشاذلي (أخصائي نفسي)</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <div>
+                            <div class="fw-bold text-dark">العنوان الكامل</div>
+                            <div class="text-muted small">مركز الشيماء خلف مدرسة عبد الهادي السقا - أعلى صيدلية د. ميرفت</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                        <div>
+                            <div class="fw-bold text-dark">هاتف المركز للتواصل</div>
+                            <a href="tel:01096353435" class="text-decoration-none fw-bold text-success">01096353435</a>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        <div>
+                            <div class="fw-bold text-dark">طريقة الدفع والاستشارة</div>
+                            <div class="text-muted small">تتوفر استشارات أونلاين وحضورية (الدفع بالعيادة أو تحويل)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- التخصصات والخدمات -->
+                <div class="info-card">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-list-check text-info me-2"></i>التخصصات المتاحة</h5>
+                    <div class="services-tags">
+                        <span class="service-tag">تخاطب</span>
+                        <span class="service-tag">تعديل سلوك</span>
+                        <span class="service-tag">تنمية مهارات</span>
+                        <span class="service-tag">إرشاد أُسري</span>
+                        <span class="service-tag">فرط الحركة</span>
+                        <span class="service-tag">إعاقة عقلية</span>
+                        <span class="service-tag">تشتت انتباه</span>
+                        <span class="service-tag">مقاييس لغة</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- لوحة التحكم للدكتورة (تظهر بعد الدخول) -->
+        <div class="row mt-5" id="adminDashboardSection" style="display: none;">
+            <div class="col-12">
+                <div class="admin-section">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                        <div>
+                            <h3 class="fw-bold text-primary mb-1"><i class="fa-solid fa-user-shield me-2"></i>لوحة تحكم إدارة الحجوزات</h3>
+                            <p class="text-muted mb-0 small">خاصة بالدكتورة زيزي الشاذلي - متابعة الطلبات وإدارة الجدول</p>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm px-3 rounded-3" onclick="logoutAdmin()">
+                            <i class="fa-solid fa-right-from-bracket me-1"></i>تسجيل الخروج
+                        </button>
+                    </div>
+
+                    <ul class="nav nav-pills mb-4 gap-2" id="adminTab" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active fw-bold px-4" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments-panel">
+                                <i class="fa-solid fa-list-check me-2"></i>الحجوزات الواردة
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-bold px-4" id="slots-tab" data-bs-toggle="tab" data-bs-target="#slots-panel">
+                                <i class="fa-solid fa-clock me-2"></i>إدارة المواعيد المتاحة
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="adminTabContent">
+                        <!-- جدول الحجوزات -->
+                        <div class="tab-pane fade show active" id="appointments-panel">
+                            <div class="table-responsive rounded-3 border">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>الاسم</th>
+                                            <th>رقم الهاتف</th>
+                                            <th>الحالة / التخصص</th>
+                                            <th>الموعد المحجوز</th>
+                                            <th>تاريخ الحجز</th>
+                                            <th class="text-center">الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="appointmentsTableBody">
+                                        <!-- المواعيد بتتحمل هنا -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- إضافة وإدارة المواعيد -->
+                        <div class="tab-pane fade" id="slots-panel">
+                            <div class="row g-4">
+                                <div class="col-md-5">
+                                    <div class="p-4 rounded-3 border bg-light">
+                                        <h5 class="fw-bold mb-3">إضافة موعد جديد للجدول</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label">اليوم والساعة</label>
+                                            <input type="text" class="form-control" id="newSlotInput" placeholder="مثال: السبت 5:00 مساءً">
+                                        </div>
+                                        <button class="btn btn-success fw-bold w-100" onclick="addNewSlot()">
+                                            <i class="fa-solid fa-plus me-1"></i>إضافة الموعد للجدول
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <h5 class="fw-bold mb-3">المواعيد المعروضة للمرضى حالياً</h5>
+                                    <ul class="list-group rounded-3" id="slotsManageList">
+                                        <!-- المواعيد بتظهر هنا -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- فوتر الموقع -->
+    <footer class="footer text-center">
+        <div class="container">
+            <p class="mb-2 fw-semibold">جميع الحقوق محفوظة © مركز الشيماء - د. زيزي الشاذلي 2026</p>
+            <p class="small text-muted mb-0">
+                <a href="#" class="text-decoration-none" onclick="openLoginModal(event)">
+                    <i class="fa-solid fa-lock me-1"></i>تسجيل دخول إدارة العيادة (لوحة التحكم)
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Modal تسجيل الدخول للدكتورة -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-header-title fw-bold text-primary"><i class="fa-solid fa-user-lock me-2"></i>تسجيل دخول لوحة التحكم</h5>
+                    <button type="button" class="btn-close ms-0 me-auto" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">البريد الإلكتروني المخصص</label>
+                            <input type="email" class="form-control" id="adminEmail" placeholder="anashamam76@gmail.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">كلمة المرور</label>
+                            <input type="password" class="form-control" id="adminPassword" placeholder="******" required>
+                        </div>
+                        <div id="loginError" class="alert alert-danger d-none border-0 small" role="alert">
+                            بيانات الدخول غير صحيحة! يرجى التأكد من البريد وكلمة المرور.
+                        </div>
+                        <button type="submit" class="btn btn-booking w-100 mt-2">تسجيل الدخول</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const DOCTOR_EMAIL = "anashamam76@gmail.com";
+        const DOCTOR_PASSWORD = "Anas123654789@";
+
+        let defaultSlots = [
+            "السبت 4:00 مساءً",
+            "السبت 5:00 مساءً",
+            "الأحد 6:00 مساءً",
+            "الأحد 7:00 مساءً",
+            "الثلاثاء 4:00 مساءً",
+            "الثلاثاء 5:00 مساءً"
+        ];
+
+        function initData() {
+            if (!localStorage.getItem('alshimaa_slots')) {
+                localStorage.setItem('alshimaa_slots', JSON.stringify(defaultSlots));
+            }
+            if (!localStorage.getItem('alshimaa_appointments')) {
+                localStorage.setItem('alshimaa_appointments', JSON.stringify([]));
+            }
+            renderSlotsDropdown();
+        }
+
+        // عرض المواعيد المتاحة فقط (التي لم يتم حجزها قيد الانتظار أو الموافقة عليها)
+        function renderSlotsDropdown() {
+            const allSlots = JSON.parse(localStorage.getItem('alshimaa_slots')) || [];
+            const appointments = JSON.parse(localStorage.getItem('alshimaa_appointments')) || [];
+            
+            // المواعيد المعلقة أو المقبولة
+            const reservedSlots = appointments.map(a => a.slot);
+
+            const select = document.getElementById('bookingSlot');
+            select.innerHTML = '<option value="" selected disabled>اختر الموعد المناسب...</option>';
+            
+            const availableSlots = allSlots.filter(s => !reservedSlots.includes(s));
+
+            if (availableSlots.length === 0) {
+                const opt = document.createElement('option');
+                opt.disabled = true;
+                opt.textContent = 'لا توجد مواعيد متاحة حالياً، يرجى التواصل هاتفياً';
+                select.appendChild(opt);
+            } else {
+                availableSlots.forEach(slot => {
+                    const opt = document.createElement('option');
+                    opt.value = slot;
+                    opt.textContent = slot;
+                    select.appendChild(opt);
+                });
+            }
+        }
+
+        // تسجيل طلب الحجز
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('patientName').value;
+            const phone = document.getElementById('patientPhone').value;
+            const caseType = document.getElementById('caseType').value;
+            const slot = document.getElementById('bookingSlot').value;
+
+            if (!slot) return;
+
+            const newAppointment = {
+                id: Date.now(),
+                name: name,
+                phone: phone,
+                caseType: caseType,
+                slot: slot,
+                status: 'pending', // قيد الانتظار
+                date: new Date().toLocaleDateString('ar-EG')
+            };
+
+            const appointments = JSON.parse(localStorage.getItem('alshimaa_appointments')) || [];
+            appointments.push(newAppointment);
+            localStorage.setItem('alshimaa_appointments', JSON.stringify(appointments));
+
+            document.getElementById('bookingForm').reset();
+            const alert = document.getElementById('bookingAlert');
+            alert.classList.remove('d-none');
+            setTimeout(() => alert.classList.add('d-none'), 5000);
+
+            // إعادة تحديث القائمة لإخفاء الموعد المحجوز مؤقتاً
+            renderSlotsDropdown();
+            renderAppointments();
+        });
+
+        function openLoginModal(e) {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+            modal.show();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value.trim();
+            const pass = document.getElementById('adminPassword').value;
+
+            if (email.toLowerCase() === DOCTOR_EMAIL.toLowerCase() && pass === DOCTOR_PASSWORD) {
+                localStorage.setItem('is_doctor_logged_in', 'true');
+                bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                showDashboard();
+            } else {
+                document.getElementById('loginError').classList.remove('d-none');
+            }
+        });
+
+        function showDashboard() {
+            if (localStorage.getItem('is_doctor_logged_in') === 'true') {
+                document.getElementById('adminDashboardSection').style.display = 'block';
+                renderAppointments();
+                renderManageSlots();
+                document.getElementById('adminDashboardSection').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('is_doctor_logged_in');
+            document.getElementById('adminDashboardSection').style.display = 'none';
+        }
+
+        // عرض جدول الحجوزات للدكتورة مع خيارات القبول والرفض
+        function renderAppointments() {
+            const appointments = JSON.parse(localStorage.getItem('alshimaa_appointments')) || [];
+            const tbody = document.getElementById('appointmentsTableBody');
+            tbody.innerHTML = '';
+
+            if (appointments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">لا توجد حجوزات مسجلة حتى الآن</td></tr>';
+                return;
+            }
+
+            appointments.forEach(app => {
+                const tr = document.createElement('tr');
+                let statusBadge = app.status === 'approved' 
+                    ? '<span class="badge bg-success">مؤكد ومقبول</span>' 
+                    : '<span class="badge bg-warning text-dark">قيد الانتظار</span>';
+
+                tr.innerHTML = `
+                    <td class="fw-bold">${app.name}</td>
+                    <td><a href="tel:${app.phone}" class="btn btn-sm btn-outline-success rounded-pill fw-bold"><i class="fa-solid fa-phone me-1"></i>${app.phone}</a></td>
+                    <td><span class="badge bg-light text-dark border px-3 py-2">${app.caseType}</span></td>
+                    <td class="fw-bold text-primary">${app.slot} <br>${statusBadge}</td>
+                    <td class="small text-muted">${app.date}</td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-success px-2" title="موافقة وتأكيد الحجز نهائياً" onclick="approveAppointment(${app.id})">
+                                <i class="fa-solid fa-check me-1"></i>قبول
+                            </button>
+                            <button class="btn btn-danger px-2" title="رفض وإعادة الموعد للمرضى" onclick="rejectAppointment(${app.id})">
+                                <i class="fa-solid fa-xmark me-1"></i>رفض / إلغاء
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // قبول الحجز (حذف الموعد نهائياً من المواعيد المتاحة)
+        function approveAppointment(id) {
+            let appointments = JSON.parse(localStorage.getItem('alshimaa_appointments')) || [];
+            let allSlots = JSON.parse(localStorage.getItem('alshimaa_slots')) || [];
+
+            const targetApp = appointments.find(a => a.id === id);
+            if (targetApp) {
+                targetApp.status = 'approved';
+                // حذف الموعد نهائياً من قائمة الأوقات المقترحة العامة
+                allSlots = allSlots.filter(s => s !== targetApp.slot);
+                localStorage.setItem('alshimaa_slots', JSON.stringify(allSlots));
+                localStorage.setItem('alshimaa_appointments', JSON.stringify(appointments));
+            }
+
+            renderAppointments();
+            renderManageSlots();
+            renderSlotsDropdown();
+        }
+
+        // رفض أو إلغاء الحجز (إعادة الموعد المقترح للظهور للمرضى)
+        function rejectAppointment(id) {
+            let appointments = JSON.parse(localStorage.getItem('alshimaa_appointments')) || [];
+            appointments = appointments.filter(a => a.id !== id);
+            
+            localStorage.setItem('alshimaa_appointments', JSON.stringify(appointments));
+            
+            renderAppointments();
+            renderSlotsDropdown();
+        }
+
+        function renderManageSlots() {
+            const slots = JSON.parse(localStorage.getItem('alshimaa_slots')) || [];
+            const list = document.getElementById('slotsManageList');
+            list.innerHTML = '';
+
+            slots.forEach((slot, index) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center py-3';
+                li.innerHTML = `
+                    <span><i class="fa-regular fa-clock me-2 text-info"></i><strong>${slot}</strong></span>
+                    <button class="btn btn-sm btn-outline-danger rounded-2" onclick="removeSlot(${index})">حذف</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function addNewSlot() {
+            const val = document.getElementById('newSlotInput').value.trim();
+            if (!val) return;
+
+            const slots = JSON.parse(localStorage.getItem('alshimaa_slots')) || [];
+            slots.push(val);
+            localStorage.setItem('alshimaa_slots', JSON.stringify(slots));
+            
+            document.getElementById('newSlotInput').value = '';
+            renderManageSlots();
+            renderSlotsDropdown();
+        }
+
+        function removeSlot(index) {
+            const slots = JSON.parse(localStorage.getItem('alshimaa_slots')) || [];
+            slots.splice(index, 1);
+            localStorage.setItem('alshimaa_slots', JSON.stringify(slots));
+            renderManageSlots();
+            renderSlotsDropdown();
+        }
+
+        initData();
+        showDashboard();
+    </script>
+
+</body>
+</html>
