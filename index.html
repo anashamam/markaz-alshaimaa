@@ -496,13 +496,13 @@
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyB06AQZc83gmO50oPqAmpePKusH5DpyGzc",
-  authDomain: "markaz-al-shaimaa.firebaseapp.com",
-  projectId: "markaz-al-shaimaa",
-  storageBucket: "markaz-al-shaimaa.firebasestorage.app",
-  messagingSenderId: "842563240094",
-  appId: "1:842563240094:web:1ecde820263c8f8100bb8f"
-};
+    apiKey: "AIzaSyB06AQZc83gmO50oPqAmpePKusH5DpyGzc",
+    authDomain: "markaz-al-shaimaa.firebaseapp.com",
+    projectId: "markaz-al-shaimaa",
+    storageBucket: "markaz-al-shaimaa.firebasestorage.app",
+    messagingSenderId: "842563240094",
+    appId: "1:842563240094:web:1ecde820263c8f8100bb8f"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -524,6 +524,7 @@
 
   document.getElementById("bookingForm").addEventListener("submit", async (event) => {
     event.preventDefault();
+    const form = event.currentTarget;
     const button = document.getElementById("submitBtn");
     button.disabled = true;
     button.textContent = "جاري الحفظ...";
@@ -535,7 +536,7 @@
         slot: document.getElementById("bookingSlot").value,
         createdAt: new Date().toLocaleDateString("ar-EG") + " " + new Date().toLocaleTimeString("ar-EG")
       });
-      event.currentTarget.reset();
+      form.reset();
       renderSlots();
       const alertBox = document.getElementById("bookingAlert");
       alertBox.classList.remove("d-none");
@@ -592,15 +593,16 @@
   });
   document.getElementById("loginForm").addEventListener("submit", async (event) => {
     event.preventDefault();
+    const form = event.currentTarget;
     const errorBox = document.getElementById("loginError");
-    const button = event.currentTarget.querySelector('button[type="submit"]');
+    const button = form.querySelector('button[type="submit"]');
     errorBox.classList.add("d-none"); button.disabled = true;
     try {
       const email = document.getElementById("adminEmail").value.trim();
       if (email.toLowerCase() !== DOCTOR_EMAIL.toLowerCase()) throw new Error("Unauthorized admin email");
       await signInWithEmailAndPassword(auth, email, document.getElementById("adminPassword").value);
       bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
-      event.currentTarget.reset();
+      form.reset();
     } catch (error) {
       console.error("Admin sign-in failed:", error);
       errorBox.textContent = "تعذر تسجيل الدخول. تحققي من البيانات وتفعيل حساب الدكتورة في Firebase.";
@@ -617,4 +619,4 @@
 </script>
 
 </body>
-</html>                                                                                                                                         
+</html>
