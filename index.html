@@ -492,7 +492,7 @@
     <!-- SDK الخاص بـ Firebase SDKs (v10) -->
     <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, deleteDoc, doc, query, orderBy, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -509,43 +509,87 @@
   const auth = getAuth(app);
   const DOCTOR_EMAIL = "anashamam76@gmail.com";
   const slots = ["السبت 4:00 مساءً", "السبت 5:00 مساءً", "الأحد 6:00 مساءً", "الأحد 7:00 مساءً", "الثلاثاء 4:00 مساءً", "الثلاثاء 5:00 مساءً"];
+  const slotId = (slot) => `slot-${slots.indexOf(slot)}`;
+  let occupiedSlotIds = new Set();
+  let slotsLoadFailed = false;
+  let bookingSaving = false;
 
   function renderSlots() {
     const select = document.getElementById("bookingSlot");
-    select.innerHTML = '<option value="" selected disabled>اختر الموعد المناسب...</option>';
-    slots.forEach((slot) => {
+    const availableSlots = slots.filter((slot) => !occupiedSlotIds.has(slotId(slot)));
+    select.innerHTML = availableSlots.length
+      ? '<option value="" selected disabled>اختر الموعد المناسب...</option>'
+      : '<option value="" selected disabled>لا توجد مواعيد متاحة حاليًا</option>';
+    availableSlots.forEach((slot) => {
       const option = document.createElement("option");
       option.value = slot;
       option.textContent = slot;
       select.appendChild(option);
     });
+    document.getElementById("submitBtn").disabled = slotsLoadFailed || bookingSaving || availableSlots.length === 0;
   }
-  renderSlots();
+
+  onSnapshot(collection(db, "bookedSlots"), (snapshot) => {
+    occupiedSlotIds = new Set(snapshot.docs.map((item) => item.id));
+    slotsLoadFailed = false;
+    renderSlots();
+  }, (error) => {
+    console.error("Could not load slot availability:", error);
+    slotsLoadFailed = true;
+    document.getElementById("bookingSlot").innerHTML = '<option value="" selected disabled>تعذر تحميل المواعيد المتاحة</option>';
+    renderSlots();
+  });
 
   document.getElementById("bookingForm").addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const button = document.getElementById("submitBtn");
+    const selectedSlot = document.getElementById("bookingSlot").value;
+    const bookingAlert = document.getElementById("bookingAlert");
+    if (!selectedSlot || occupiedSlotIds.has(slotId(selectedSlot))) {
+      renderSlots();
+      alert("الموعد ده اتحجز بالفعل. اختاري موعدًا آخر من المواعيد المتاحة.");
+      return;
+    }
+    bookingSaving = true;
     button.disabled = true;
     button.textContent = "جاري الحفظ...";
     try {
-      await addDoc(collection(db, "appointments"), {
+      const appointmentRef = doc(collection(db, "appointments"));
+      const slotRef = doc(db, "bookedSlots", slotId(selectedSlot));
+      const batch = writeBatch(db);
+      batch.set(appointmentRef, {
         name: document.getElementById("patientName").value.trim(),
         phone: document.getElementById("patientPhone").value.trim(),
         caseType: document.getElementById("caseType").value,
-        slot: document.getElementById("bookingSlot").value,
+        slot: selectedSlot,
         createdAt: new Date().toLocaleDateString("ar-EG") + " " + new Date().toLocaleTimeString("ar-EG")
       });
+      batch.set(slotRef, { slot: selectedSlot, appointmentId: appointmentRef.id });
+      await batch.commit();
+      occupiedSlotIds.add(slotId(selectedSlot));
       form.reset();
       renderSlots();
-      const alertBox = document.getElementById("bookingAlert");
-      alertBox.classList.remove("d-none");
-      setTimeout(() => alertBox.classList.add("d-none"), 6000);
+      bookingAlert.className = "alert alert-success mt-4 border-0 shadow-sm";
+      bookingAlert.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i>تم تسجيل طلب الحجز بنجاح! سيتم التواصل معكم هاتفياً لتأكيد الموعد.';
+      setTimeout(() => bookingAlert.classList.add("d-none"), 6000);
     } catch (error) {
       console.error("Booking save failed:", error);
-      alert("تعذر تسجيل الحجز. يرجى المحاولة لاحقًا أو الاتصال بالمركز.");
+      if (error.code === "permission-denied" || error.code === "already-exists") {
+        occupiedSlotIds.add(slotId(selectedSlot));
+        renderSlots();
+        bookingAlert.className = "alert alert-warning mt-4 border-0 shadow-sm";
+        bookingAlert.textContent = "الموعد ده اتحجز للتو. اختاري موعدًا آخر من المواعيد المتاحة.";
+      } else {
+        bookingAlert.className = "alert alert-danger mt-4 border-0 shadow-sm";
+        bookingAlert.textContent = "تعذر تسجيل الحجز. يرجى المحاولة لاحقًا أو الاتصال بالمركز.";
+      }
+      bookingAlert.classList.remove("d-none");
+      setTimeout(() => bookingAlert.classList.add("d-none"), 7000);
     } finally {
+      bookingSaving = false;
       button.disabled = false;
+      renderSlots();
       button.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>تأكيد طلب الحجز';
     }
   });
@@ -555,6 +599,7 @@
     body.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">جاري تحميل الحجوزات...</td></tr>';
     try {
       const result = await getDocs(query(collection(db, "appointments"), orderBy("createdAt", "desc")));
+      await syncBookedSlots(result);
       body.replaceChildren();
       if (result.empty) {
         body.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">لا توجد حجوزات مسجلة حتى الآن</td></tr>';
@@ -570,11 +615,24 @@
         const slot = document.createElement("td"); slot.className = "fw-bold text-primary"; slot.textContent = booking.slot || "";
         const date = document.createElement("td"); date.className = "small text-muted"; date.textContent = booking.createdAt || "";
         const actions = document.createElement("td"); actions.className = "text-center";
-        const remove = document.createElement("button"); remove.type = "button"; remove.className = "btn btn-danger btn-sm"; remove.textContent = "حذف";
+        const remove = document.createElement("button"); remove.type = "button"; remove.className = "btn btn-danger btn-sm"; remove.textContent = "رفض وإتاحة الموعد";
         remove.addEventListener("click", async () => {
-          if (!confirm("هل أنت متأكد من رغبتك في حذف هذا الحجز؟")) return;
-          try { await deleteDoc(doc(db, "appointments", snapshot.id)); await renderAppointments(); }
-          catch (error) { console.error(error); alert("تعذر حذف الحجز."); }
+          if (!confirm("رفض هذا الحجز وإتاحة الموعد لشخص آخر؟")) return;
+          try {
+            const latest = await getDocs(collection(db, "appointments"));
+            const otherBooking = latest.docs.find((item) => item.id !== snapshot.id && item.data().slot === booking.slot);
+            const slotRef = doc(db, "bookedSlots", slotId(booking.slot));
+            const slotSnapshot = (await getDocs(collection(db, "bookedSlots"))).docs.find((item) => item.id === slotId(booking.slot));
+            const batch = writeBatch(db);
+            if (slotSnapshot?.data().appointmentId === snapshot.id) {
+              if (otherBooking) batch.set(slotRef, { slot: booking.slot, appointmentId: otherBooking.id });
+              else batch.delete(slotRef);
+            }
+            batch.delete(doc(db, "appointments", snapshot.id));
+            await batch.commit();
+            await renderAppointments();
+          }
+          catch (error) { console.error(error); alert("تعذر رفض الحجز وإتاحة الموعد."); }
         });
         actions.appendChild(remove);
         [name, phone, caseCell, slot, date, actions].forEach((cell) => row.appendChild(cell));
@@ -584,6 +642,38 @@
       console.error("Could not load bookings:", error);
       body.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">تعذر تحميل الحجوزات. تحققي من تسجيل الدخول وإعدادات Firebase.</td></tr>';
     }
+  }
+
+  async function syncBookedSlots(appointments) {
+    const locks = await getDocs(collection(db, "bookedSlots"));
+    const activeBySlot = new Map();
+    appointments.forEach((item) => {
+      const booking = item.data();
+      if (!slots.includes(booking.slot)) return;
+      if (!activeBySlot.has(booking.slot)) activeBySlot.set(booking.slot, []);
+      activeBySlot.get(booking.slot).push(item);
+    });
+    const lockById = new Map(locks.docs.map((item) => [item.id, item]));
+    const batch = writeBatch(db);
+    let changes = 0;
+    for (const [slot, bookings] of activeBySlot) {
+      const id = slotId(slot);
+      const lock = lockById.get(id);
+      const lockedBookingExists = lock && bookings.some((item) => item.id === lock.data().appointmentId);
+      if (!lockedBookingExists) {
+        batch.set(doc(db, "bookedSlots", id), { slot, appointmentId: bookings[0].id });
+        changes++;
+      }
+    }
+    for (const lock of locks.docs) {
+      const slot = lock.data().slot;
+      const bookings = activeBySlot.get(slot) || [];
+      if (!bookings.length) {
+        batch.delete(doc(db, "bookedSlots", lock.id));
+        changes++;
+      }
+    }
+    if (changes) await batch.commit();
   }
 
   document.getElementById("loginLink").addEventListener("click", (event) => {
