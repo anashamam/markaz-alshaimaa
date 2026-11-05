@@ -521,7 +521,7 @@
   const db = getFirestore(app);
   const auth = getAuth(app);
   const DOCTOR_EMAIL = "anashamam76@gmail.com";
-  const slots = ["السبت" , "الأحد","الاثنين" , "الثلاثاء ","الاربعاء","الخميس""];
+  const slots = ["السبت","الأحد","الاثنين","الثلاثاء","الاربعاء","الخميس"];
   const slotId = (slot) => `slot-${slots.indexOf(slot)}`;
   let occupiedSlotIds = new Set();
   let slotsLoadFailed = false;
